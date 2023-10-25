@@ -1,25 +1,24 @@
-# Electric Motor Temperature Prediction
+# Predykcja temperatury silnika motocykla elektycznego
 
-Predicting electric motor temperature using a Convolutional Neural Network(CNN) 
 
-### 1. Problem Statement
+### 1. Cel projektu
 
-Predicting electric motor temperatur given other sensor measurements during operation.
+Wykorzystanie 1-wymiarowej neuronowej sieci konwolucyjnej do predykcji temperatury silnika synchroniczniego z magnesami trwałymi (PMSM), na podstawie danych z pozostałych czujników motocykla elektrycznego.
 
-### 2. Data Description
+### 2. Opis danych
 
-This project uses data collected during testing of the electric motorcycle.
+Dane zostały zebrane podczas testów prototypu elektrycznego motocykla wyścigowego. Silnik jest chłodzony z wykorzystaniem płaszcza wodnego, a woda jest chłodzona z wykorzystaniem chłodnicy z czujnikami temperatury na wejściu i wyjściu chłodnic.
+Najważniejsze parametry w kontekście temperatury silnika:
 
-* **accelerometer** - Acceleration
-* **cooler** - Coolant temperature
-* **drivetrain** - 
-* **MotorTemperatureCheck** - Engine temperature
-* **Overview_Enhanced** - 
-* **RPM_CHECK** - 
-* **RPM_overview** - 
-* **rpm_sev-t** - 
-* **suspension** - 
-* **voltage_drop_temp** - 
-* **windiff** - 
+* Temperatura otoczenia **[°C]**
+* Temperatura wejściowa chłodnicy **[°C]**
+* Temperatira wyjściowa chłodnicy **[°C]**
+* u_d - Składowa napięcia w osi d **[V]**
+* u_q - Składowa napięcia w osi q **[V]**
+* Prędkość silnika **[RPM]**
+* Moment obrotowy wywołany prądem **[Nm]**
+* i_d - Składowa prądu w osi d **[A]**
+* i_q - Składowa prądu w osi q **[A]**
+
 
 
