@@ -18,7 +18,7 @@ y = df['SV_Motor_Temperature']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffle=False)
 
 # Reshape the data for Conv1D input
-# Number of time steps (arbitrarily chosen for this example)
+# Number of time steps (parametr do eksperymentow)
 time_steps = 10
 num_features = X.shape[1]
 
