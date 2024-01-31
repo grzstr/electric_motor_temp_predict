@@ -3,8 +3,9 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense
+
+from keras.models import Sequential
+from keras.layers import Conv1D, MaxPooling1D, Flatten, Dense
 
 # Load the dataset
 file_path = 'electric_motor_temp_predict/fp_all_normalized.csv'  # Replace with your file path
@@ -15,11 +16,12 @@ X = df.drop('SV_Motor_Temperature', axis=1)
 y = df['SV_Motor_Temperature']
 
 # Splitting the data into train and test sets
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffle=False)
 
 # Reshape the data for Conv1D input
 # Number of time steps (parametr do eksperymentow)
-time_steps = 10
+time_steps = 20
 num_features = X.shape[1]
 
 # Function to create sequences
