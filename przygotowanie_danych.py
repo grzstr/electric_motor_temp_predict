@@ -9,12 +9,14 @@ fp_all_tab = []
 
 for i in range(1,5):
     fp_all_tab.append(np.array(pd.read_csv('fp1/FP1_' + str(i) + '.csv', sep=',',low_memory=False)))
-
-for i in range(1,8):
+for i in range(1,7):
     fp_all_tab.append(np.array(pd.read_csv('fp2/FP2_' + str(i) + '.csv', sep=',',low_memory=False)))
+for i in range(1,7):
+    fp_all_tab.append(np.array(pd.read_csv('r/RACE_' + str(i) + '.csv', sep=',',low_memory=False)))
 
-df = pd.read_csv('fp1/FP1_1.csv', sep=',',low_memory=False)
+df = pd.read_csv('r/RACE_1.csv', sep=',',low_memory=False)
 
+"""
 #Wyszukanie tabeli z największą ilością wierszy
 the_longest_len = 0
 for fp in fp_all_tab:
@@ -24,12 +26,15 @@ for fp in fp_all_tab:
 
 width = len(fp_all_tab[0][0])
 
+
 #Dodanie wierszy wypełnionych zerami, by wszystkie tabele miały taki sam wymiar
 for i in range(len(fp_all_tab)):
     if len(fp_all_tab[i]) < the_longest_len:
         for j in range(the_longest_len-len(fp_all_tab[i])):
             zero = np.zeros((the_longest_len-len(fp_all_tab[i]),width))
             fp_all_tab[i] = np.concatenate((fp_all_tab[i], zero))
+"""
+            
 
 #Złączenie tabel
 fp_all = fp_all_tab[0]
@@ -42,26 +47,7 @@ fp_all_df = pd.DataFrame(fp_all)
 fp_all_df.columns = df.columns
 
 #Zapis do pliku CSV
-fp_all_df.to_csv("fp_all.csv", index = False)
-
-#****************************************************
-#*** NORMALIZACJA DANYCH (PRZED ZŁĄCZENIEM TABEL) ***
-# #****************************************************
-# """
-# scaler = StandardScaler()
-
-# for i in range(len(fp_all_tab)):
-#     fp_df = pd.DataFrame(fp_all_tab[i])
-#     # Zastosuj normalizację do danych
-#     normalized_data = scaler.fit_transform(fp_df)
-#     # Stwórz nowy DataFrame z znormalizowanymi danymi
-#     normalized_df_one = pd.DataFrame(normalized_data, columns=df.columns)
-#     if i == 0:
-#         normalized_df = normalized_df_one
-#     normalized_df = pd.concat([normalized_df, normalized_df_one], axis=0)
-
-# #****************************************************
-# """
+#fp_all_df.to_csv("race_without_zeros.csv", index = False)
 
 
 #*******************************************************
@@ -69,7 +55,6 @@ fp_all_df.to_csv("fp_all.csv", index = False)
 #*******************************************************
 
 scaler = StandardScaler()
-
 normalized_data = scaler.fit_transform(fp_all_df)
 normalized_df = pd.DataFrame(normalized_data, columns=df.columns)
 
@@ -79,61 +64,30 @@ normalized_df = normalized_df.reset_index(drop=True)
 #*******************************************************
 
 # Zapisz znormalizowane dane do pliku CSV
-normalized_df.to_csv("fp_all_normalized.csv", index=False)
+
+
+normalized_df.to_csv("fp_all_race_normalized.csv", index=False)
+
+pierwsza_czesc = normalized_df.iloc[:4617, :]
+druga_czesc = normalized_df.iloc[4617:5991+4616:]
+trzecia_czesc = normalized_df.iloc[5991+4613:, :]
+
+pierwsza_czesc.to_csv("fp1_123_normalized.csv", index=False)
+druga_czesc.to_csv("fp2_123_normalized.csv", index=False)
+trzecia_czesc.to_csv("race_123_normalized.csv", index=False)
+
+# Odwrócenie transformacji
 
 
 
-# Load fp1 data
-fp1_tab = []
-for i in range(1, 5):
-    fp1_tab.append(np.array(pd.read_csv('fp1/FP1_' + str(i) + '.csv', sep=',', low_memory=False)))
 
-# Find the longest length in fp1 data
-the_longest_len_fp1 = max(len(fp) for fp in fp1_tab)
-
-# Add zero rows to make all tables the same dimension
-for i in range(len(fp1_tab)):
-    if len(fp1_tab[i]) < the_longest_len_fp1:
-        zero = np.zeros((the_longest_len_fp1 - len(fp1_tab[i]), width))
-        fp1_tab[i] = np.concatenate((fp1_tab[i], zero))
-
-# Concatenate fp1 data
-fp1_all = np.concatenate(fp1_tab, axis=0)
-
-# Create DataFrame and add column names
-fp1_all_df = pd.DataFrame(fp1_all, columns=df.columns)
-
-# Normalize fp1 data
-normalized_fp1_data = scaler.transform(fp1_all_df)
-normalized_fp1_df = pd.DataFrame(normalized_fp1_data, columns=df.columns)
-
-# Save normalized fp1 data to CSV
-normalized_fp1_df.to_csv("fp1_normalized.csv", index=False)
+#*******************************************************
+# ODWRACANIE NORMALIZACJI
+#*******************************************************
 
 
-# Load fp2 data
-fp2_tab = []
-for i in range(1, 8):
-    fp2_tab.append(np.array(pd.read_csv('fp2/FP2_' + str(i) + '.csv', sep=',', low_memory=False)))
-
-# Find the longest length in fp2 data
-the_longest_len_fp2 = max(len(fp) for fp in fp2_tab)
-
-# Add zero rows to make all tables the same dimension
-for i in range(len(fp2_tab)):
-    if len(fp2_tab[i]) < the_longest_len_fp2:
-        zero = np.zeros((the_longest_len_fp2 - len(fp2_tab[i]), width))
-        fp2_tab[i] = np.concatenate((fp2_tab[i], zero))
-
-# Concatenate fp2 data
-fp2_all = np.concatenate(fp2_tab, axis=0)
-
-# Create DataFrame and add column names
-fp2_all_df = pd.DataFrame(fp2_all, columns=df.columns)
-
-# Normalize fp2 data
-normalized_fp2_data = scaler.transform(fp2_all_df)
-normalized_fp2_df = pd.DataFrame(normalized_fp2_data, columns=df.columns)
-
-# Save normalized fp2 data to CSV
-normalized_fp2_df.to_csv("fp2_normalized.csv", index=False)
+file_name = "fp_all_race_normalized"
+loaded_normalized_data = pd.read_csv(file_name + ".csv")
+original_data = scaler.inverse_transform(loaded_normalized_data)
+original_df = pd.DataFrame(original_data, columns=loaded_normalized_data.columns)
+original_df.to_csv(file_name + "_original.csv", index=False)

@@ -2,22 +2,68 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
+from sklearn.preprocessing import StandardScaler
+import keras_tuner as kt
 
-
+import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Conv1D, MaxPooling1D, Flatten, Dense
 
-# Load the dataset
-file_path = 'fp_all_normalized.csv'  # Replace with your file path
-df = pd.read_csv(file_path)
+
+#Wczytanie wszystkich plików z danymi
+fp_all_tab = []
+for i in range(1,5):
+    fp_all_tab.append(np.array(pd.read_csv('fp1/FP1_' + str(i) + '.csv', sep=',',low_memory=False)))
+for i in range(1,7):
+    fp_all_tab.append(np.array(pd.read_csv('fp2/FP2_' + str(i) + '.csv', sep=',',low_memory=False)))
+for i in range(1,7):
+    fp_all_tab.append(np.array(pd.read_csv('r/RACE_' + str(i) + '.csv', sep=',',low_memory=False)))
+
+df = pd.read_csv('r/RACE_1.csv', sep=',',low_memory=False)
+          
+#Złączenie tabel
+fp_all = fp_all_tab[0]
+for i in range(1, len(fp_all_tab)):
+    fp_all = np.concatenate((fp_all, fp_all_tab[i]))
+
+#Dodanie podpisów kolumn
+fp_all_df = pd.DataFrame(fp_all)
+fp_all_df.columns = df.columns
 
 # Splitting the data into features and target
-X = df.drop('SV_Motor_Temperature', axis=1)
-y = df['SV_Motor_Temperature']
+X = fp_all_df.drop('SV_Motor_Temperature', axis=1)
+y = fp_all_df['SV_Motor_Temperature']
 
-# Splitting the data into train and test sets
+# Normalizacja danych
+scaler_x = StandardScaler()
+X_norm = scaler_x.fit_transform(X)
+X_norm_df = pd.DataFrame(X_norm, columns=X.columns)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffle=False)
+scaler_y = StandardScaler()
+y_norm = scaler_y.fit_transform(y.values.reshape(-1, 1))
+y_norm_df = pd.DataFrame(y_norm)
+
+X_norm_rest = X_norm_df.iloc[:5991+4616, :]
+X_VALIDATE = X_norm_df.iloc[5991+4613:, :]
+
+y_norm_rest = y_norm_df.iloc[:5991+4616, :]
+y_VALIDATE = y_norm_df.iloc[5991+4613:, :]
+
+# Resetuj indeksy dla X_norm_rest i X_VALIDATE
+X_norm_rest = X_norm_rest.reset_index(drop=True)
+X_VALIDATE = X_VALIDATE.reset_index(drop=True)
+
+# Resetuj indeksy dla y_norm_rest i y_VALIDATE
+y_norm_rest = y_norm_rest.reset_index(drop=True)
+y_VALIDATE = y_VALIDATE.reset_index(drop=True)
+
+y_VALIDATE_inv = scaler_y.inverse_transform(y_VALIDATE)
+
+#plot x, y
+plt.plot( y,color='black')
+plt.show()
+
+X_train, X_test, y_train, y_test = train_test_split(X_norm_rest, y_norm_rest, test_size=0.30, shuffle=False)
 
 # Reshape the data for Conv1D input
 # Number of time steps (parametr do eksperymentow)
@@ -83,7 +129,7 @@ print(f'Test Loss: {test_loss}')
 # Make predictions
 y_pred = model.predict(X_test_seq)
 
-# Plot the results
+# # Plot the results
 import matplotlib.pyplot as plt
 
 plt.plot(y_test_seq, label='True')
@@ -93,7 +139,7 @@ plt.legend()
 plt.show()
 
 
-#accuracy
+# #accuracy
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
@@ -107,4 +153,69 @@ print('R2 score: %.2f'
         % r2_score(y_test_seq, y_pred))
 print('Explained variance score: %.2f'
         % explained_variance_score(y_test_seq, y_pred))
+
+
+
+
+#Valitation of the model on different data
+# Load the dataset
+# file_path = 'race22_normalized.csv'  # Replace with your file path
+
+# df3 = pd.read_csv(file_path3)
+# Splitting the data into train and test sets
+
+
+# # Creating sequences for train and test data
+X_val_seq = create_sequences(X_VALIDATE.values, time_steps)
+# 
+
+# # Adjusting labels for the sequence data
+
+y_val_seq = y_VALIDATE[time_steps:].values
+
+
+
+# #make predictions
+
+y_pred_FP2 = model.predict(X_val_seq)
+#acuracy
+print('Mean squared error: %.2f'
+        % mean_squared_error(y_VALIDATE[time_steps:], y_pred_FP2))
+print('Mean absolute error: %.2f'
+        % mean_absolute_error(y_VALIDATE[time_steps:], y_pred_FP2))
+print('R2 score: %.2f'
+        % r2_score(y_VALIDATE[time_steps:], y_pred_FP2))
+print('Explained variance score: %.2f'
+        % explained_variance_score(y_VALIDATE[time_steps:], y_pred_FP2))
+
+# # Plot the results
+import matplotlib.pyplot as plt
+
+plt.plot(y_VALIDATE[time_steps:], label='True')
+plt.plot(y_pred_FP2, label='Predicted')
+plt.title('Prediction')
+plt.legend()
+plt.show()
+
+
+#save fatures and target do dataframe
+df4=pd.DataFrame(X_val_seq)
+# df4['SV_Motor_Temperature']=y_VALIDATE[time_steps:]
+df4['SV_Motor_Temperature']=y_pred_FP2
+# df4.to_csv("fp2_123_predicted.csv", index=False)
+
+y_pred_FP2_inv = scaler_y.inverse_transform(y_pred_FP2)
+
+
+plt.plot(y_VALIDATE_inv[time_steps:], label='True')
+plt.plot(y_pred_FP2_inv, label='Predicted')
+plt.title('Prediction')
+plt.legend()
+plt.show()
+
+
+
+
+
+
 
