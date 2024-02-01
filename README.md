@@ -3,7 +3,7 @@
 ## Skład grupy: Piotr Wyszyński 252921 | Grzegorz Strama 255349
 ### 1. Cel projektu
 
-Wykorzystanie 1-wymiarowej neuronowej sieci konwolucyjnej do predykcji temperatury silnika synchroniczniego z magnesami trwałymi (PMSM), na podstawie danych z pozostałych czujników motocykla elektrycznego.
+Wykorzystanie 1-wymiarowej neuronowej sieci konwolucyjnej oraz modelu LSTM do predykcji temperatury silnika synchroniczniego z magnesami trwałymi (PMSM), na podstawie danych z pozostałych czujników motocykla elektrycznego.
 
 ### 2. Opis danych
 
