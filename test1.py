@@ -19,7 +19,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffl
 
 # Reshape the data for Conv1D input
 # Number of time steps (parametr do eksperymentow)
-time_steps = 10
+time_steps = 20
 num_features = X.shape[1]
 
 # Function to create sequences
